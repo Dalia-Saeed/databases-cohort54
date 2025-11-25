@@ -1,0 +1,15 @@
+{
+  "name": "research_project",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "pg": "^8.16.3"
+  },
+  "scripts": {
+    "exercise1": "node exercise1_keys.js",
+    "exercise2": "node exercise2_relationships.js",
+    "seed": "node seed_data.js",
+    "exercise3": "node exercise3_joins.js",
+    "exercise4": "node exercise4_aggregates.js"
+  }
+}
