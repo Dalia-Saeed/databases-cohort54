@@ -1,9 +1,9 @@
 import pg from "pg";
 
 export const client = new pg.Client({
-    user: "hyfuser",         
+    user: "hyfuser",
     host: "localhost",
-    database: "hyfuser",  
+    database: "hyfuser",
     password: "hyfpassword",
     port: 5432
 });
