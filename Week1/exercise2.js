@@ -37,10 +37,10 @@ async function main() {
     {
       question: "Cities in the Netherlands",
       sql: `
-        SELECT city.name
-        FROM city
-        JOIN country ON city.countrycode = country.code
-        WHERE country.name = 'Netherlands';
+        SELECT name
+FROM city
+WHERE countrycode = 'NLD';
+
       `,
     },
     {

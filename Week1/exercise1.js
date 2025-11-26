@@ -1,13 +1,15 @@
 
 const { Client } = require("pg");
 
-// ---------- CONFIGURE YOUR LOGIN HERE ----------
+
 const superUserConfig = {
-  user: "hyfuser",
+  user: "postgres",
   host: "localhost",
-  password: "yourpassword",
+  password: "postgres",
+  database: "postgres", 
   port: 5432,
 };
+
 
 const meetupDbConfig = {
   ...superUserConfig,
@@ -36,10 +38,11 @@ async function createTablesAndInsertData() {
 
   await client.query(`
     CREATE TABLE IF NOT EXISTS Invitee (
-      invitee_no SERIAL PRIMARY KEY,
-      invitee_name VARCHAR(100),
-      invited_by VARCHAR(100)
-    );
+  invitee_no SERIAL PRIMARY KEY,
+  invitee_name VARCHAR(100),
+  invited_by INT REFERENCES Invitee(invitee_no)
+);
+
   `);
 
   await client.query(`
@@ -52,19 +55,23 @@ async function createTablesAndInsertData() {
 
   await client.query(`
     CREATE TABLE IF NOT EXISTS Meeting (
-      meeting_no SERIAL PRIMARY KEY,
-      meeting_title VARCHAR(200),
-      starting_time TIMESTAMP,
-      ending_time TIMESTAMP,
-      room_no INT REFERENCES Room(room_no)
-    );
+  meeting_no SERIAL PRIMARY KEY,
+  meeting_title VARCHAR(200),
+  starting_time TIMESTAMP,
+  ending_time TIMESTAMP,
+  room_no INT,
+  FOREIGN KEY (room_no) REFERENCES Room(room_no)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+);
+
   `);
 
   console.log("Inserting rows...");
 
-  await client.query("DELETE FROM Meeting;");
-  await client.query("DELETE FROM Invitee;");
-  await client.query("DELETE FROM Room;");
+  //await client.query("DELETE FROM Meeting;");
+  //await client.query("DELETE FROM Invitee;");
+  //await client.query("DELETE FROM Room;");
 
   await client.query(`
     INSERT INTO Invitee (invitee_name, invited_by)
