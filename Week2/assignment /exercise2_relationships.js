@@ -15,10 +15,11 @@ async function run() {
 
     await client.query(`
         CREATE TABLE IF NOT EXISTS author_papers (
-            author_id INT REFERENCES authors(author_id),
-            paper_id INT REFERENCES research_papers(paper_id),
-            PRIMARY KEY (author_id, paper_id)
-        );
+    author_id INT NOT NULL REFERENCES authors(author_id),
+    paper_id INT NOT NULL REFERENCES research_papers(paper_id),
+    PRIMARY KEY (author_id, paper_id)
+);
+
     `);
 
     console.log("Exercise 2: research_papers and author_papers tables created.");

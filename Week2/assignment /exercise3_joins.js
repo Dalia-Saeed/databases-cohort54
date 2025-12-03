@@ -15,10 +15,11 @@ async function run() {
 
     console.log("Authors and their research papers:");
     result = await client.query(`
-        SELECT a.author_name, rp.paper_title
-        FROM authors a
-        LEFT JOIN author_papers ap ON a.author_id = ap.author_id
-        LEFT JOIN research_papers rp ON ap.paper_id = rp.paper_id;
+        SELECT a.*, rp.*
+FROM authors a
+LEFT JOIN author_papers ap ON a.author_id = ap.author_id
+LEFT JOIN research_papers rp ON ap.paper_id = rp.paper_id;
+
     `);
     console.table(result.rows);
 
