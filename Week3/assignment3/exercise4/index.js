@@ -1,40 +1,58 @@
-require("dotenv").config();
-const { MongoClient } = require("mongodb");
-const seedDatabase = require("./seedDatabase");
+import 'dotenv/config';
+import { MongoClient } from "mongodb";
+import seedDatabase from "./seedDatabase.js";
 
-const uri = process.env.MONGO_URI;
+
+const uri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME;
-const collectionName = process.env.COLLECTION;
 
-async function main() {
-  const client = new MongoClient(uri);
-  await client.connect();
+const client = new MongoClient(uri);
 
-  const db = client.db(dbName);
-  const episodes = db.collection(collectionName);
+async function run() {
+  try {
+    // Connect to MongoDB
+    await client.connect();
+    console.log("Connected to MongoDB Atlas");
 
-  await seedDatabase(db);
+    const db = client.db(dbName);
+    const collection = db.collection("bob_ross_episodes");
 
-  console.log("All episodes:");
-  console.log(await episodes.find().toArray());
+    // Seed database
+    await seedDatabase(db);
+    console.log("Database seeded");
 
-  // CREATE
-  await episodes.insertOne({ title: "New Painting", elements: ["tree", "lake"] });
+    // CREATE
+    const createResult = await collection.insertOne({
+      title: "My Happy Trees",
+      elements: ["trees", "mountain", "river"]
+    });
+    console.log("Inserted document with id:", createResult.insertedId);
 
-  // READ
-  const ep = await episodes.findOne({ title: "New Painting" });
-  console.log("Created:", ep);
+    // READ
+    const episodesWithTrees = await collection
+      .find({ elements: "trees" })
+      .toArray();
+    console.log("Number of episodes with trees:", episodesWithTrees.length);
 
-  // UPDATE
-  await episodes.updateOne(
-    { title: "New Painting" },
-    { $set: { elements: ["tree", "cloud"] } }
-  );
+    // UPDATE
+    const updateResult = await collection.updateOne(
+      { title: "My Happy Trees" },
+      { $set: { title: "My Even Happier Trees" } }
+    );
+    console.log("Number of updated documents:", updateResult.modifiedCount);
 
-  // DELETE
-  await episodes.deleteOne({ title: "New Painting" });
+    // DELETE
+    const deleteResult = await collection.deleteOne({
+      title: "My Even Happier Trees"
+    });
+    console.log("Number of deleted documents:", deleteResult.deletedCount);
 
-  client.close();
+  } catch (err) {
+    console.error("Error:", err);
+  } finally {
+    await client.close();
+    console.log("Connection closed");
+  }
 }
 
-main();
+run();

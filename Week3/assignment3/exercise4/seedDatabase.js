@@ -1,6 +1,6 @@
-const data = require("./data.json");
+import data from "./data.json" assert { type: "json" };
 
-module.exports = async function seedDatabase(db) {
+export default async function seedDatabase(db) {
   const collection = db.collection(process.env.COLLECTION);
 
   await collection.deleteMany({});
@@ -13,4 +13,4 @@ module.exports = async function seedDatabase(db) {
   );
 
   console.log("Database seeded.");
-};
+}
