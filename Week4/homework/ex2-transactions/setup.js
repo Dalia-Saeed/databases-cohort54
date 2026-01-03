@@ -1,32 +1,39 @@
+const { MongoClient, ServerApiVersion } = require("mongodb");
+require("dotenv").config();
 
-const connectDB = require("../db");
+const uri = process.env.MONGODB_URL;
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
-async function setup() {
-  const { db, client } = await connectDB();
-  const accounts = db.collection("accounts");
+async function setupAccounts() {
+  try {
+    await client.connect();
+    const db = client.db("databaseWeek4");
+    const collection = db.collection("accounts");
 
-  await accounts.deleteMany({});
+    await collection.deleteMany({});
 
-  await accounts.insertMany([
-    {
-      account_number: 101,
-      balance: 5000,
-      account_changes: []
-    },
-    {
-      account_number: 102,
-      balance: 2000,
-      account_changes: []
-    },
-    {
-      account_number: 103,
-      balance: 8000,
-      account_changes: []
-    }
-  ]);
+    const accounts = [
+      { account_number: 101, balance: 5000, account_changes: [] },
+      { account_number: 102, balance: 3000, account_changes: [] }
+    ];
 
-  console.log("Setup done: accounts created.");
-  await client.close();
+    await collection.insertMany(accounts);
+    console.log("Accounts setup completed!");
+  } catch (err) {
+    console.error(err);
+  } finally {
+    await client.close();
+  }
 }
 
-module.exports = setup;
+module.exports = { setupAccounts };
+
+if (require.main === module) {
+  setupAccounts();
+}
